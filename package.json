@@ -2,9 +2,12 @@
   "name": "@autumn/wgl",
   "version": "1.0.0",
   "description": "High(-er)-level WebGL components",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["lib/*"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx -p typescript tsc"
   },
   "keywords": [
     "webgl"

@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "outDir": "lib",
+        "declaration": true,
+        "noImplicitAny": true,
+        "target": "es2020"
+    }
+}
