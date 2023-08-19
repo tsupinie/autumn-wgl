@@ -1,5 +1,5 @@
 {
-  "name": "@autumn/wgl",
+  "name": "autumn-wgl",
   "version": "1.0.0",
   "description": "High(-er)-level WebGL components",
   "main": "lib/index.js",
