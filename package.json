@@ -13,7 +13,7 @@
     "webgl"
   ],
   "author": "Tim Supinie",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "typedoc": "^0.24.0",
     "typedoc-plugin-markdown": "^3.15.0",
