@@ -3,7 +3,7 @@ High(-er)-level WebGL1 components.
 
 Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight.
 
-## Install
+## Installation
 ```bash
 npm i autumn-wgl
 ```
@@ -43,7 +43,7 @@ const image_data = {
 const texture = new WGLTexture(gl, image_data);
 ```
 
-For textures, if you have a texture rendered in an offscreen canvas, you can create `image_data` like this
+If you have a texture image rendered into a canvas element, you can create `image_data` like this
 ```javascript
 const image_data = {
   format: gl.RGBA,
