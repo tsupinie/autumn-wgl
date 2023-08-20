@@ -1,5 +1,7 @@
 # autumn-wgl
-High(-er)-level WebGL1 components
+High(-er)-level WebGL1 components.
+
+Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight.
 
 ## Install
 ```bash
@@ -80,9 +82,47 @@ program.use(
   {'u_texture_sampler': texture}
 );
 
-// Render to the screen buffer (specifying what region with `lower_left_x`, `lower_left_y`, `width`, and `height`);
+// Set the screen buffer as the render target (specifying what region with `lower_left_x`, `lower_left_y`, `width`, and `height`);
 WGLFramebuffer.screen(gl).renderTo(lower_left_x, lower_left_y, width, height);
+
+// Clear the screen buffer to black
+WGLFramebuffer.screen(gl).clear([0., 0., 0., 1.]);
 
 // Do the actual drawing
 program.draw();
+```
+
+## Advanced Usage
+The `WGLFramebuffer` class represents a framebuffer for offscreen rendering. (As one might be able to guess, the screen buffer is also a `WGLFramebuffer`, so they share a lot of the same functions.)
+```javascript
+// [In the setup phase] Create a framebuffer object
+const fbo_image_data = {
+  format: data_format,  // e.g., gl.RGBA for an RGBA image
+  type: data_type,      // e.g., gl.UNSIGNED_BYTE for unsigned byte image data        
+  image: null,          // null to declare space in video RAM, but not fill it with anything
+  width: fbo_width,     // Framebuffer width in pixels
+  height: fbo_height,   // Framebuffer height in pixels
+};
+
+const fbo_texture = new WGLTexture(gl, fbo_image_data);
+const fbo = new WGLFramebuffer(gl, fbo_texture);
+
+// [In the render phase] Set the frame buffer as the render target and clear to transparent
+fbo.renderTo(0, 0, fbo_width, fbo_height);
+fbo.clear([0., 0., 0., 0.]);
+```
+
+In some advanced rendering, you may want to run the same program several times, rendering to offscreen buffers on each pass. A common technique is to alternate between two framebuffers. Use the `flipFlopBuffers()` function to make this easier.
+```javascript
+const doRender = (src, dest, ipass) => {
+  // Do whatever rendering in this function. `src` is the source framebuffer for this pass, `dest` is the destination
+  //  framebuffer for this pass, and `ipass` is the pass number (e.g., 0 for the 1st pass, 1 for the second pass, etc.)
+};
+
+flipFlopBuffers(
+  n_passes,     // The number of render passes to do
+  source_fb,    // The source framebuffer (set this to the second of your auxiliary framebuffer objects if the initial data aren't from a framebuffer)
+  auxilary_fb,  // A length-2 tuple of framebuffer objects to alternate between on each rendering pass
+  doRender      // Your function that does the rendering on each pass
+);
 ```
