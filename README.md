@@ -1,7 +1,7 @@
 # autumn-wgl
-High(-er)-level WebGL1 components.
+High(-er)-level WebGL components.
 
-Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight.
+Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight. This ought to work with both WebGL 1 and 2.
 
 ## Installation
 ```bash
@@ -52,6 +52,8 @@ const image_data = {
   mag_filter: magnification_filter   // e.g., gl.LINEAR
 };
 ```
+
+Additionally, for WebGL2, supply the internal format (e.g., `gl.RGBA8`) in `format`, and the correct format will be computed internally.
 
 ### Render phase
 ```javascript
