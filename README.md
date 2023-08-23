@@ -1,7 +1,7 @@
 # autumn-wgl
 High(-er)-level WebGL components.
 
-Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight.
+Using WebGL requires calling a lot of low-level functions with hard-to-remember names multiple times. So I made a library that's hopefully easier to keep straight. This ought to work with both WebGL 1 and 2.
 
 ## Installation
 ```bash
