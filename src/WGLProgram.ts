@@ -1,6 +1,7 @@
 
 import { WGLBuffer } from "./WGLBuffer";
 import { WGLTexture } from "./WGLTexture";
+import { WebGLAnyRenderingContext } from "./utils";
 
 /**
  * @module wgl/WebGLProgram
@@ -14,7 +15,7 @@ import { WGLTexture } from "./WGLTexture";
  * @param frag_shader_src   - The source code for the fragment shader
  * @returns                   A compiled and linked WebGL program
  */
-const compileAndLinkShaders = (gl: WebGLRenderingContext, vertex_shader_src: string, frag_shader_src: string): WebGLProgram => {
+const compileAndLinkShaders = (gl: WebGLAnyRenderingContext, vertex_shader_src: string, frag_shader_src: string): WebGLProgram => {
     // create a vertex shader
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     if (vertexShader === null) {
@@ -70,7 +71,7 @@ const compileAndLinkShaders = (gl: WebGLRenderingContext, vertex_shader_src: str
 /** Class representing a WebGL shader program */
 class WGLProgram {
     /** @internal */
-    readonly gl: WebGLRenderingContext;
+    readonly gl: WebGLAnyRenderingContext;
 
     /** @internal */
     readonly prog: WebGLProgram;
@@ -93,7 +94,7 @@ class WGLProgram {
      * @param vertex_shader_src   - The vertex shader source code
      * @param fragment_shader_src - The fragment shader source code
      */
-    constructor(gl: WebGLRenderingContext, vertex_shader_src: string, fragment_shader_src: string) {
+    constructor(gl: WebGLAnyRenderingContext, vertex_shader_src: string, fragment_shader_src: string) {
         this.gl = gl;
         this.prog = compileAndLinkShaders(gl, vertex_shader_src, fragment_shader_src);
 

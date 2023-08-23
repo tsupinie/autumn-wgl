@@ -1,5 +1,6 @@
 
 import { WGLTexture } from "./WGLTexture";
+import { WebGLAnyRenderingContext } from "./utils";
 
 /**
  * @module wgl/WebGLFramebuffer
@@ -11,12 +12,12 @@ import { WGLTexture } from "./WGLTexture";
  */
 class WGLFramebufferBase {
     /** @internal */
-    gl: WebGLRenderingContext | null;
+    gl: WebGLAnyRenderingContext | null;
 
     /** @internal */
     readonly framebuffer: WebGLFramebuffer | null;
 
-    constructor(gl: (WebGLRenderingContext | null), framebuffer: (WebGLFramebuffer | null)) {
+    constructor(gl: (WebGLAnyRenderingContext | null), framebuffer: (WebGLFramebuffer | null)) {
         this.gl = gl;
         this.framebuffer = framebuffer;
     }
@@ -91,7 +92,7 @@ class WGLScreenbuffer extends WGLFramebufferBase {
      * Register the WebGL rendering context for later use
      * @param gl - The WebGL rendering context
      */
-    registerGLContext(gl: WebGLRenderingContext) {
+    registerGLContext(gl: WebGLAnyRenderingContext) {
         this.gl = gl;
     }
 }
@@ -110,7 +111,7 @@ class WGLFramebuffer extends WGLFramebufferBase {
      * @param gl      - The WebGL rendering context
      * @param texture - The texture object to associate with this framebuffer
      */
-    constructor(gl: WebGLRenderingContext, texture: WGLTexture) {
+    constructor(gl: WebGLAnyRenderingContext, texture: WGLTexture) {
         const framebuffer =  gl.createFramebuffer();
         if (framebuffer === null) {
             throw "Could not create WebGL Framebuffer";
@@ -128,7 +129,7 @@ class WGLFramebuffer extends WGLFramebufferBase {
      * @static
      * @param gl - The WebGL rendering context to use
      */
-    static screen(gl: WebGLRenderingContext) {
+    static screen(gl: WebGLAnyRenderingContext) {
         SCREEN.registerGLContext(gl); 
         return SCREEN;
     }

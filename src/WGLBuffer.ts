@@ -4,10 +4,12 @@
  * Module containing a helper class for WebGL data buffers
  */
 
+import { WebGLAnyRenderingContext } from "./utils";
+
 /** A class representing a WebGL data buffer */
 class WGLBuffer {
     /** @internal */
-    readonly gl: WebGLRenderingContext;
+    readonly gl: WebGLAnyRenderingContext;
 
     /** @internal */
     readonly n_coords_per_vert: number;
@@ -28,7 +30,7 @@ class WGLBuffer {
      * @param n_coords_per_vert  - The number of coordinates for each vertex in the data buffer
      * @param draw_mode          - The draw mode to use for this buffer. Should be one of gl.TRIANGLE_STRIP, etc.
      */
-    constructor(gl: WebGLRenderingContext, verts: Float32Array, n_coords_per_vert: number, draw_mode: GLenum) {
+    constructor(gl: WebGLAnyRenderingContext, verts: Float32Array, n_coords_per_vert: number, draw_mode: GLenum) {
         const DTYPES: Record<string, number> = {
             'Float32Array': gl.FLOAT,
             'Uint8Array': gl.UNSIGNED_BYTE,
