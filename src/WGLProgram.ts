@@ -123,7 +123,7 @@ class WGLProgram {
 		}
 
         // in WebGL2 shaders (gl 300 es), attribute just become the keyword 'in'
-        let vtx_shader_match = isWebGL2Ctx(this.gl) ? 
+        let vtx_shader_match = is_webgl2 ? 
             /\b(?:in|attribute)+([\w ]+?) +([\w_]+);[\s]*$/mg : /attribue +([\w ]+?) +([\w_]+);[\s]*$/mg
 
         for (const match of vertex_shader_src.matchAll(vtx_shader_match)) {
