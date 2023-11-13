@@ -115,10 +115,16 @@ class WGLProgram {
         vertex_shader_src = vertex_shader_src.split('\n').map(remove_comments).join('\n');
         fragment_shader_src = fragment_shader_src.split('\n').map(remove_comments).join('\n');
 
+		// safety check the vertex shader source
+		const is_webgl2 = isWebGL2Ctx(this.gl);
+		if (!is_webgl2 && 
+			(vertex_shader_src.includes('#version 300 es') || fragment_shader_src.includes('#version 300 es'))) {
+			throw `WebGL2 context required for shader source containing '#version 300 es'`;
+		}
 
         // in WebGL2 shaders (gl 300 es), attribute just become the keyword 'in'
         let vtx_shader_match = isWebGL2Ctx(this.gl) ? 
-            /in +([\w ]+?) +([\w_]+);[\s]*$/mg : /attribue +([\w ]+?) +([\w_]+);[\s]*$/mg
+            /\b(?:in|attribute)+([\w ]+?) +([\w_]+);[\s]*$/mg : /attribue +([\w ]+?) +([\w_]+);[\s]*$/mg
 
         for (const match of vertex_shader_src.matchAll(vtx_shader_match)) {
             const [full_match, type, a_name] = match;
