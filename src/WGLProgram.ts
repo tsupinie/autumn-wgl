@@ -1,7 +1,7 @@
 
 import { WGLBuffer } from "./WGLBuffer";
 import { WGLTexture } from "./WGLTexture";
-import { WebGLAnyRenderingContext } from "./utils";
+import { isWebGL2Ctx, WebGLAnyRenderingContext } from "./utils";
 
 /**
  * @module wgl/WebGLProgram
@@ -115,7 +115,12 @@ class WGLProgram {
         vertex_shader_src = vertex_shader_src.split('\n').map(remove_comments).join('\n');
         fragment_shader_src = fragment_shader_src.split('\n').map(remove_comments).join('\n');
 
-        for (const match of vertex_shader_src.matchAll(/attribute +([\w ]+?) +([\w_]+);[\s]*$/mg)) {
+
+        // in WebGL2 shaders (gl 300 es), attribute just become the keyword 'in'
+        let vtx_shader_match = isWebGL2Ctx(this.gl) ? 
+            /in +([\w ]+?) +([\w_]+);[\s]*$/mg : /attribue +([\w ]+?) +([\w_]+);[\s]*$/mg
+
+        for (const match of vertex_shader_src.matchAll(vtx_shader_match)) {
             const [full_match, type, a_name] = match;
             this.attributes[a_name] = {'type': type, 'location': gl.getAttribLocation(this.prog, a_name)};
         }
