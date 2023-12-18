@@ -145,6 +145,7 @@ class WGLProgram {
      * @param gl                  - The WebGL rendering context
      * @param vertex_shader_src   - The vertex shader source code
      * @param fragment_shader_src - The fragment shader source code
+     * @param opts.define         - Preprocessor macros to define (like -D when running gcc)
      */
     constructor(gl: WebGLAnyRenderingContext, vertex_shader_src: string, fragment_shader_src: string, opts?: {define?: string[]}) {
         vertex_shader_src = preprocessShader(vertex_shader_src, opts);
