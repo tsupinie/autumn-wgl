@@ -1,5 +1,5 @@
 
-import { WGLBuffer } from "./WGLBuffer";
+import { WGLBuffer, WGLIndexBuffer } from "./WGLBuffer";
 import { WGLTexture } from "./WGLTexture";
 import { isWebGL2Ctx, WebGLAnyRenderingContext } from "./utils";
 
@@ -135,6 +135,9 @@ class WGLProgram {
     readonly uniforms: Record<string, { type: string; location: WebGLUniformLocation; }>
 
     /** @internal */
+    index_buffer: WGLIndexBuffer | null;
+
+    /** @internal */
     n_verts: number | null;
 
     /** @internal */
@@ -159,6 +162,7 @@ class WGLProgram {
 
         this.n_verts = null;
         this.draw_mode = null;
+        this.index_buffer = null;
 
         const remove_comments = (line: string) => {
             const comment_idx = line.indexOf('//');
@@ -218,10 +222,21 @@ class WGLProgram {
      * @param attribute_buffers - An object with the keys being the attribute variable names and the values being the buffers to associate with each variable
      * @param uniform_values    - An object with the keys being the uniform variable names and the values being the uniform values
      * @param textures          - An object with the keys being the sampler names in the source code and the values being the textures to associate with each sampler
+     * @param index_buffer      - A WGLIndexBuffer specifying which indices to draw in which order
      */
-    use(attribute_buffers?: Record<string, WGLBuffer>, uniform_values?: Record<string, (number | number[])>, textures?: Record<string, WGLTexture>): void {
+    use(attribute_buffers?: Record<string, WGLBuffer>, uniform_values?: Record<string, (number | number[])>, textures?: Record<string, WGLTexture>, 
+        index_buffer?: WGLIndexBuffer): void {
+
         this.gl.useProgram(this.prog);
-        
+
+        if (index_buffer !== undefined) {
+            index_buffer.bindToProgram();
+            this.index_buffer = index_buffer;
+        }
+        else {
+            this.index_buffer = null;
+        }
+
         this.draw_mode = null;
         this.n_verts = null;
 
@@ -329,7 +344,12 @@ class WGLProgram {
             throw "Cannot draw without binding attribute buffers";
         }
 
-        this.gl.drawArrays(this.draw_mode, 0, this.n_verts);
+        if (this.index_buffer === null) {
+            this.gl.drawArrays(this.draw_mode, 0, this.n_verts);
+        }
+        else {
+            this.gl.drawElements(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0);
+        }
     }
 }
 
