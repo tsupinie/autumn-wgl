@@ -15,7 +15,7 @@ In WebGL rendering, there are usually two phases: a "setup" phase, where where y
 ```javascript
 // Compile a shader program
 const program = new WGLProgram(
-  gl,            // WebGL1 rendering context
+  gl,            // WebGL rendering context
   vertex_src,    // vertex shader source code
   fragment_src,  // fragment shader source code
 );
@@ -92,6 +92,22 @@ WGLFramebuffer.screen(gl).clear([0., 0., 0., 1.]);
 
 // Do the actual drawing
 program.draw();
+```
+
+You might want to use WebGL's indexed vertices. This has some advantages when you have some duplicate vertices, as the duplicates don't need to be passed to VRAM, and the vertex shader doesn't need to be run on the duplicates. To do this:
+
+```javascript
+// [In the setup phase] Create the index buffer object
+const index_array = new Uint16Array([0, 1, 2, /* ... */, 0, 1, 2, /* ... */]);
+const index_buffer = new WGLIndexBuffer(gl, index_array, gl.TRIANGLE_STRIP);
+
+// [In the render phase] Add the index_buffer to the program.use() call.
+program.use(
+  {'a_attribute': buffer, 'a_texcoord': tex_coords},
+  {'u_uniform': 42, 'u_color': [0., 0., 0.]},
+  {'u_texture_sampler': texture},
+  index_buffer
+);
 ```
 
 ## Advanced Usage
