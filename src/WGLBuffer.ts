@@ -93,7 +93,7 @@ class WGLIndexBuffer extends WGLBufferBase {
      * Bind this buffer to the ELEMENT_ARRAY_BUFFER target
      * @internal
      */
-    bindToProgram(): void {
+    bind(): void {
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffer);
     }
 }

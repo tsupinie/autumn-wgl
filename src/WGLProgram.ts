@@ -230,7 +230,7 @@ class WGLProgram {
         this.gl.useProgram(this.prog);
 
         if (index_buffer !== undefined) {
-            index_buffer.bindToProgram();
+            index_buffer.bind();
             this.index_buffer = index_buffer;
         }
         else {
