@@ -143,6 +143,9 @@ class WGLProgram {
     /** @internal */
     draw_mode: number | null;
 
+    /** @internal */
+    sampler_names: string[]
+
     /**
      * Create and compile a shader program from source
      * @param gl                  - The WebGL rendering context
@@ -163,6 +166,7 @@ class WGLProgram {
         this.n_verts = null;
         this.draw_mode = null;
         this.index_buffer = null;
+        this.sampler_names = [];
 
         const remove_comments = (line: string) => {
             const comment_idx = line.indexOf('//');
@@ -214,6 +218,12 @@ class WGLProgram {
 
             this.uniforms[u_name] = {'type': type_parts[type_parts.length - 1], 'location': uniform_loc};
         }
+
+        Object.entries(this.uniforms).forEach(([u_name, uniform]) => {
+            if (uniform.type.toLowerCase() == 'sampler2d') {
+                this.sampler_names.push(u_name);
+            }
+        })
     }
 
     /**
@@ -325,11 +335,13 @@ class WGLProgram {
      * @param textures - An object with the keys being the sampler names in the source code and the values being the textures to associate with each sampler
      */
     bindTextures(textures: Record<string, WGLTexture>) {
-        Object.entries(textures).forEach(([sampler_name, texture], gl_tex_num) => {
+        Object.entries(textures).forEach(([sampler_name, texture]) => {
             if (this.uniforms[sampler_name] === undefined) {
                 console.warn(`Skipping texture provided for sampler '${sampler_name}' because the sampler was not found in the program.`)
                 return;
             }
+
+            const gl_tex_num = this.sampler_names.indexOf(sampler_name);
 
             const {type, location} = this.uniforms[sampler_name];
             texture.bindToProgram(location, gl_tex_num);
