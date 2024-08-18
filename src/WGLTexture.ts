@@ -6,15 +6,28 @@
 
 import { WebGLAnyRenderingContext, isWebGL2Ctx } from "./utils";
 
-interface WGLTextureSpec {
+interface WGLTextureSpecBase {
     format: GLenum;
     type: GLenum;
-    width?: number;
-    height?: number;
     mag_filter?: GLenum;
-    image: any;
-    row_alignment?: number;
+    row_alignment?: number;    
 }
+
+interface WGLTextureSpecRawImage extends WGLTextureSpecBase {
+    width: number;
+    height: number;
+    image: ArrayBufferView;
+}
+
+function isRawImageTextureSpec(obj: any): obj is WGLTextureSpecRawImage {
+    return 'width' in obj && 'height' in obj;
+}
+
+interface WGLTextureSpecCanvas extends WGLTextureSpecBase {
+    image: HTMLCanvasElement;
+}
+
+type WGLTextureSpec = WGLTextureSpecCanvas | WGLTextureSpecRawImage;
 
 function getWebGL2Format(gl: WebGL2RenderingContext, internal_format: number, data_type: number) : number {
     switch(data_type) {
@@ -226,7 +239,7 @@ class WGLTexture {
         const row_alignment = image['row_alignment'] === undefined ? 4 : image['row_alignment'];
         gl.pixelStorei(gl.UNPACK_ALIGNMENT, row_alignment);
 
-        if (image['width'] !== undefined && image['height'] !== undefined) {
+        if (isRawImageTextureSpec(image)) {
             gl.texImage2D(gl.TEXTURE_2D, 0, image['format'], image['width'], image['height'], 0, format, image['type'], image['image']);
         }
         else {
