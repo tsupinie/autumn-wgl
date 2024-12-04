@@ -1,6 +1,6 @@
 
 import { WGLTexture } from "./WGLTexture";
-import { WebGLAnyRenderingContext } from "./utils";
+import { WebGLAnyRenderingContext, isWebGL2Ctx } from "./utils";
 
 /**
  * @module wgl/WebGLFramebuffer
@@ -71,7 +71,7 @@ class WGLFramebufferBase {
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
         texture.activate(0);
 
-        gl.copyTexImage2D(gl.TEXTURE_2D, 0, gl.RGBA, x, y, width, height, 0);
+        gl.copyTexImage2D(gl.TEXTURE_2D, 0, texture.spec.format, x, y, width, height, 0);
     }
 }
 

@@ -185,6 +185,8 @@ class WGLTexture {
     /** @internal */
     readonly texture: WebGLTexture;
 
+    spec: WGLTextureSpec
+
     /** @internal */
     tex_num: number | null;
 
@@ -231,6 +233,7 @@ class WGLTexture {
      */
     setImageData(image: WGLTextureSpec): void {
         const gl = this.gl;
+        this.spec = image;
 
         gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
