@@ -19,19 +19,19 @@ import { TypedArray, TypedArrayUint, WebGLAnyRenderingContext } from "./utils";
 
 class WGLBufferBase {
     /** @internal */
-    readonly gl: WebGLAnyRenderingContext;
+    protected readonly gl: WebGLAnyRenderingContext;
 
     /** @internal */
-    readonly n_coords_per_vert: number;
+    protected readonly n_coords_per_vert: number;
 
     /** @internal */
-    readonly dtype: number;
+    public readonly dtype: number;
 
-    readonly n_verts: number;
-    readonly draw_mode: GLenum;
+    public readonly n_verts: number;
+    public readonly draw_mode: GLenum;
 
     /** @internal */
-    readonly buffer: WebGLBuffer;
+    protected readonly buffer: WebGLBuffer;
 
     constructor(gl: WebGLAnyRenderingContext, verts: TypedArray, n_coords_per_vert: number, draw_mode: GLenum, bind_target: number) {
         this.gl = gl;

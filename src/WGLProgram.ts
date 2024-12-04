@@ -123,28 +123,28 @@ const compileAndLinkShaders = (gl: WebGLAnyRenderingContext, vertex_shader_src: 
 /** Class representing a WebGL shader program */
 class WGLProgram {
     /** @internal */
-    readonly gl: WebGLAnyRenderingContext;
+    private readonly gl: WebGLAnyRenderingContext;
 
     /** @internal */
-    readonly prog: WebGLProgram;
+    private readonly prog: WebGLProgram;
 
     /** @internal */
-    readonly attributes: Record<string, { type: string; location: number; }>
+    private readonly attributes: Record<string, { type: string; location: number; }>
 
     /** @internal */
-    readonly uniforms: Record<string, { type: string; location: WebGLUniformLocation; }>
+    private readonly uniforms: Record<string, { type: string; location: WebGLUniformLocation; }>
 
     /** @internal */
-    index_buffer: WGLIndexBuffer | null;
+    private index_buffer: WGLIndexBuffer | null;
 
     /** @internal */
-    n_verts: number | null;
+    private n_verts: number | null;
 
     /** @internal */
-    draw_mode: number | null;
+    private draw_mode: number | null;
 
     /** @internal */
-    sampler_names: string[]
+    private sampler_names: string[]
 
     /**
      * Create and compile a shader program from source

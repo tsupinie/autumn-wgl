@@ -180,15 +180,15 @@ function getWebGL2Format(gl: WebGL2RenderingContext, internal_format: number, da
 /** Class representing a WebGL texture */
 class WGLTexture {
     /** @internal */
-    readonly gl: WebGLAnyRenderingContext;
+    private readonly gl: WebGLAnyRenderingContext;
 
     /** @internal */
-    readonly texture: WebGLTexture;
+    private readonly texture: WebGLTexture;
 
     spec: WGLTextureSpec
 
     /** @internal */
-    tex_num: number | null;
+    private tex_num: number | null;
 
     /**
      * 

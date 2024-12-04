@@ -11,11 +11,9 @@ import { WebGLAnyRenderingContext, isWebGL2Ctx } from "./utils";
  * Base class for WebGL framebuffers
  */
 class WGLFramebufferBase {
-    /** @internal */
-    gl: WebGLAnyRenderingContext | null;
+    protected gl: WebGLAnyRenderingContext | null;
 
-    /** @internal */
-    readonly framebuffer: WebGLFramebuffer | null;
+    protected readonly framebuffer: WebGLFramebuffer | null;
 
     constructor(gl: (WebGLAnyRenderingContext | null), framebuffer: (WebGLFramebuffer | null)) {
         this.gl = gl;
@@ -104,7 +102,7 @@ const SCREEN = new WGLScreenbuffer();
  * @extends WGLFramebufferBase
  */
 class WGLFramebuffer extends WGLFramebufferBase {
-    readonly texture: WGLTexture;
+    public readonly texture: WGLTexture;
 
     /**
      * Create a framebuffer associated with a texture
