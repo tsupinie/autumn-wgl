@@ -4,10 +4,12 @@
   "description": "High(-er)-level WebGL components",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/*"],
+  "files": [
+    "lib/*"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tsupinie/autumn-wgl"
+    "url": "git+https://github.com/tsupinie/autumn-wgl.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
