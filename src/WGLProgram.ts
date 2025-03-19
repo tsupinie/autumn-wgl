@@ -234,13 +234,13 @@ class WGLProgram {
 
         // Cache which version of the functions to use, avoiding running gl.getParameter in the render loop
         if (isWebGL2Ctx(this.gl)) {
-            this.daiFunc = this.gl.drawArraysInstanced;
-            this.deiFunc = this.gl.drawElementsInstanced;
+            this.daiFunc = this.gl.drawArraysInstanced.bind(this.gl);
+            this.deiFunc = this.gl.drawElementsInstanced.bind(this.gl);
         }
         else {
             const ext = this.gl.getExtension("ANGLE_instanced_arrays");
-            this.daiFunc = ext.drawArraysInstancedANGLE;
-            this.deiFunc = ext.drawElementsInstancedANGLE;
+            this.daiFunc = ext.drawArraysInstancedANGLE.bind(ext);
+            this.deiFunc = ext.drawElementsInstancedANGLE.bind(ext);
         }
     }
 

@@ -77,11 +77,11 @@ class WGLBuffer extends WGLBufferBase {
 
         // Cache which version of the function to use, avoiding running gl.getParameter in the render loop
         if (isWebGL2Ctx(this.gl)) {
-            this.vadFunc = this.gl.vertexAttribDivisor;
+            this.vadFunc = this.gl.vertexAttribDivisor.bind(this.gl);
         }
         else {
             const ext = this.gl.getExtension("ANGLE_instanced_arrays");
-            this.vadFunc = ext.vertexAttribDivisorANGLE;
+            this.vadFunc = ext.vertexAttribDivisorANGLE.bind(ext);
         }
     }
 
