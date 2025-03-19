@@ -60,6 +60,8 @@ interface WGLBufferOpts {
 class WGLBuffer extends WGLBufferBase {
     public readonly is_per_instance: boolean
 
+    private readonly vadFunc: (prog_attr_location: number, instance_skip: number) => void;
+
     /**
      * Create a WebGL buffer and put some data in it
      * @param gl                 - The WebGL rendering context
@@ -72,6 +74,15 @@ class WGLBuffer extends WGLBufferBase {
         
         opts = opts === undefined ? {} : opts;
         this.is_per_instance = opts.per_instance === undefined ? false : opts.per_instance;
+
+        // Cache which version of the function to use, avoiding running gl.getParameter in the render loop
+        if (isWebGL2Ctx(this.gl)) {
+            this.vadFunc = this.gl.vertexAttribDivisor;
+        }
+        else {
+            const ext = this.gl.getExtension("ANGLE_instanced_arrays");
+            this.vadFunc = ext.vertexAttribDivisorANGLE;
+        }
     }
 
     /**
@@ -86,13 +97,7 @@ class WGLBuffer extends WGLBufferBase {
 
         const instance_skip = this.is_per_instance ? 1 : 0;
 
-        if (isWebGL2Ctx(this.gl)) {
-            this.gl.vertexAttribDivisor(prog_attr_location, instance_skip);
-        }
-        else {
-            const ext = this.gl.getExtension("ANGLE_instanced_arrays");
-            ext.vertexAttribDivisorANGLE(prog_attr_location, instance_skip);
-        }
+        this.vadFunc(prog_attr_location, instance_skip);
     }
 }
 

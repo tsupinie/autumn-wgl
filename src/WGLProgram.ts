@@ -149,6 +149,9 @@ class WGLProgram {
     /** @internal */
     private instance_count: number;
 
+    private readonly daiFunc: (mode: number, first: number, count: number, instanceCount: number) => void;
+    private readonly deiFunc: (mode: number, count: number, type: number, offset: number, instanceCount: number) => void;
+
     /**
      * Create and compile a shader program from source
      * @param gl                  - The WebGL rendering context
@@ -227,7 +230,18 @@ class WGLProgram {
             if (uniform.type.toLowerCase() == 'sampler2d') {
                 this.sampler_names.push(u_name);
             }
-        })
+        });
+
+        // Cache which version of the functions to use, avoiding running gl.getParameter in the render loop
+        if (isWebGL2Ctx(this.gl)) {
+            this.daiFunc = this.gl.drawArraysInstanced;
+            this.deiFunc = this.gl.drawElementsInstanced;
+        }
+        else {
+            const ext = this.gl.getExtension("ANGLE_instanced_arrays");
+            this.daiFunc = ext.drawArraysInstancedANGLE;
+            this.deiFunc = ext.drawElementsInstancedANGLE;
+        }
     }
 
     /**
@@ -377,13 +391,7 @@ class WGLProgram {
                 this.gl.drawArrays(this.draw_mode, 0, this.n_verts);
             }
             else {
-                if (isWebGL2Ctx(this.gl)) {
-                    this.gl.drawArraysInstanced(this.draw_mode, 0, this.n_verts, this.instance_count);
-                }
-                else {
-                    const ext = this.gl.getExtension("ANGLE_instanced_arrays");
-                    ext.drawArraysInstancedANGLE(this.draw_mode, 0, this.n_verts, this.instance_count);
-                }
+                this.daiFunc(this.draw_mode, 0, this.n_verts, this.instance_count);
             }
         }
         else {
@@ -391,13 +399,7 @@ class WGLProgram {
                 this.gl.drawElements(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0);
             }
             else {
-                if (isWebGL2Ctx(this.gl)) {
-                    this.gl.drawElementsInstanced(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0, this.instance_count);
-                }
-                else {
-                    const ext = this.gl.getExtension("ANGLE_instanced_arrays");
-                    ext.drawElementsInstancedANGLE(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0, this.instance_count);
-                }
+                this.deiFunc(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0, this.instance_count);
             }
         }
     }
