@@ -146,6 +146,9 @@ class WGLProgram {
     /** @internal */
     private sampler_names: string[]
 
+    /** @internal */
+    private instance_count: number;
+
     /**
      * Create and compile a shader program from source
      * @param gl                  - The WebGL rendering context
@@ -167,6 +170,7 @@ class WGLProgram {
         this.draw_mode = null;
         this.index_buffer = null;
         this.sampler_names = [];
+        this.instance_count = 0;
 
         const remove_comments = (line: string) => {
             const comment_idx = line.indexOf('//');
@@ -249,6 +253,7 @@ class WGLProgram {
 
         this.draw_mode = null;
         this.n_verts = null;
+        this.instance_count = 0;
 
         if (attribute_buffers !== undefined) {
             this.bindAttributes(attribute_buffers);
@@ -274,15 +279,26 @@ class WGLProgram {
                 return;
             }
 
-            this.n_verts = this.n_verts === null ? buffer.n_verts : this.n_verts;
             this.draw_mode = this.draw_mode === null ? buffer.draw_mode : this.draw_mode;
+
+            if (buffer.is_per_instance) {
+                if (this.instance_count == 0) {
+                    this.instance_count = buffer.n_verts;
+                }
+                else if (this.instance_count != buffer.n_verts) {
+                    throw `Unexpected number of instances for attribute buffer ${a_name} (expected ${this.instance_count}, got ${buffer.n_verts})`
+                }
+            }
+            else {
+                this.n_verts = this.n_verts === null ? buffer.n_verts : this.n_verts;
+
+                if (this.n_verts != buffer.n_verts) {
+                    throw `Unexpected number of vertices for attribute buffer ${a_name} (expected ${this.n_verts}, got ${buffer.n_verts}).`;
+                }
+            }
 
             if (this.draw_mode != buffer.draw_mode) {
                 throw `Unexpected draw mode for attribute buffer ${a_name} (expected ${this.draw_mode}, got ${buffer.draw_mode}).`;
-            }
-
-            if (this.n_verts != buffer.n_verts) {
-                throw `Unexpected number of vertices for attribute buffer ${a_name} (expected ${this.n_verts}, got ${buffer.n_verts}).`;
             }
 
             const {type, location} = this.attributes[a_name];
@@ -357,10 +373,32 @@ class WGLProgram {
         }
 
         if (this.index_buffer === null) {
-            this.gl.drawArrays(this.draw_mode, 0, this.n_verts);
+            if (this.instance_count == 0) {
+                this.gl.drawArrays(this.draw_mode, 0, this.n_verts);
+            }
+            else {
+                if (isWebGL2Ctx(this.gl)) {
+                    this.gl.drawArraysInstanced(this.draw_mode, 0, this.n_verts, this.instance_count);
+                }
+                else {
+                    const ext = this.gl.getExtension("ANGLE_instanced_arrays");
+                    ext.drawArraysInstancedANGLE(this.draw_mode, 0, this.n_verts, this.instance_count);
+                }
+            }
         }
         else {
-            this.gl.drawElements(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0);
+            if (this.instance_count == 0) {
+                this.gl.drawElements(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0);
+            }
+            else {
+                if (isWebGL2Ctx(this.gl)) {
+                    this.gl.drawElementsInstanced(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0, this.instance_count);
+                }
+                else {
+                    const ext = this.gl.getExtension("ANGLE_instanced_arrays");
+                    ext.drawElementsInstancedANGLE(this.draw_mode, this.index_buffer.n_verts, this.index_buffer.dtype, 0, this.instance_count);
+                }
+            }
         }
     }
 }

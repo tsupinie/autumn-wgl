@@ -15,7 +15,7 @@ const getGLDtype = (gl: WebGLAnyRenderingContext, ary: TypedArray) => {
     return DTYPES[ary.constructor.name];
 }
 
-import { TypedArray, TypedArrayUint, WebGLAnyRenderingContext } from "./utils";
+import { TypedArray, TypedArrayUint, WebGLAnyRenderingContext, isWebGL2Ctx } from "./utils";
 
 class WGLBufferBase {
     /** @internal */
@@ -52,8 +52,14 @@ class WGLBufferBase {
     }
 }
 
+interface WGLBufferOpts {
+    per_instance?: boolean;
+}
+
 /** A class representing a WebGL data buffer */
 class WGLBuffer extends WGLBufferBase {
+    public readonly is_per_instance: boolean
+
     /**
      * Create a WebGL buffer and put some data in it
      * @param gl                 - The WebGL rendering context
@@ -61,8 +67,11 @@ class WGLBuffer extends WGLBufferBase {
      * @param n_coords_per_vert  - The number of coordinates for each vertex in the data buffer
      * @param draw_mode          - The draw mode to use for this buffer. Should be one of gl.TRIANGLE_STRIP, etc.
      */
-    constructor(gl: WebGLAnyRenderingContext, verts: TypedArray, n_coords_per_vert: number, draw_mode: GLenum) {
+    constructor(gl: WebGLAnyRenderingContext, verts: TypedArray, n_coords_per_vert: number, draw_mode: GLenum, opts?: WGLBufferOpts) {
         super(gl, verts, n_coords_per_vert, draw_mode, gl.ARRAY_BUFFER);
+        
+        opts = opts === undefined ? {} : opts;
+        this.is_per_instance = opts.per_instance === undefined ? false : opts.per_instance;
     }
 
     /**
@@ -74,6 +83,16 @@ class WGLBuffer extends WGLBufferBase {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
         this.gl.enableVertexAttribArray(prog_attr_location);
         this.gl.vertexAttribPointer(prog_attr_location, this.n_coords_per_vert, this.dtype, false, 0, 0);
+
+        const instance_skip = this.is_per_instance ? 1 : 0;
+
+        if (isWebGL2Ctx(this.gl)) {
+            this.gl.vertexAttribDivisor(prog_attr_location, instance_skip);
+        }
+        else {
+            const ext = this.gl.getExtension("ANGLE_instanced_arrays");
+            ext.vertexAttribDivisorANGLE(prog_attr_location, instance_skip);
+        }
     }
 }
 
