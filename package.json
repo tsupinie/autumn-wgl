@@ -1,6 +1,6 @@
 {
   "name": "autumn-wgl",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "High(-er)-level WebGL components",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
