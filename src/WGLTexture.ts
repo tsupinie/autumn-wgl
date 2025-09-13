@@ -16,7 +16,7 @@ interface WGLTextureSpecBase {
 interface WGLTextureSpecRawImage extends WGLTextureSpecBase {
     width: number;
     height: number;
-    image: ArrayBufferView;
+    image: ArrayBufferView | null;
 }
 
 function isRawImageTextureSpec(obj: any): obj is WGLTextureSpecRawImage {
