@@ -10,6 +10,7 @@ interface WGLTextureSpecBase {
     format: GLenum;
     type: GLenum;
     mag_filter?: GLenum;
+    min_filter?: GLenum;
     row_alignment?: number;    
 }
 
@@ -215,10 +216,11 @@ class WGLTexture {
         this.setImageData(image);
 
         const mag_filter = image['mag_filter'] === undefined ? gl.LINEAR : image['mag_filter'];
+        const min_filter = image['min_filter'] === undefined ? gl.LINEAR : image['min_filter'];
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, min_filter);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, mag_filter);
     }
 
