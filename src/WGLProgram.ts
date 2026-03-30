@@ -227,7 +227,7 @@ class WGLProgram {
         }
 
         Object.entries(this.uniforms).forEach(([u_name, uniform]) => {
-            if (uniform.type.toLowerCase() == 'sampler2d') {
+            if (uniform.type.toLowerCase().endsWith('sampler2d')) {
                 this.sampler_names.push(u_name);
             }
         });
